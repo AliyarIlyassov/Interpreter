@@ -1,0 +1,12 @@
+int finally
+float my
+float program
+int works
+int abl
+float tabl
+abl = 5 + 6 - 4
+haha = 7
+print abl
+works = 8
+print haha
+$
