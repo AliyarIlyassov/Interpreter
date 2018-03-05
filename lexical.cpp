@@ -68,8 +68,7 @@ void tabl_ident::put ( string buf ) {
 		if (buf == (p[i].name) ) {
 			return;
 		}
-	p[top].name = buf;
-	p[top++].declare = true;
+	p[top++].name = buf;
 };
 
 void Scanner::clear() { buf = ""; }
@@ -122,7 +121,8 @@ Lex Scanner::get_lex() {
 					if (ident_ind = look(buf, TW))
 						return Lex(TWords[ident_ind], buf);
 					else {
-						TID.put(buf);
+//						TID.put(buf);
+//						cout << buf << " just declared\n";
 						return Lex(LEX_ID, buf);
 					}
 				} else

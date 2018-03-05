@@ -22,7 +22,7 @@ struct Parser {
 	string c_val;
 	Scanner scan;
 
-	Stack < int, 100 > st_int;
+	Stack < string, 100 > st_str;
 	Stack < type_lex, 100 > st_lex;
 
 	void Prog();
@@ -35,9 +35,11 @@ struct Parser {
 
 	void gl ();
 
+	void dec();	//Checks if there was redeclaration
+	void check_id();
+
 /*
 	void dec ( type_lex Type);
-	void check_id ();
 	void check_op ();
 	void eq_type ();
 	

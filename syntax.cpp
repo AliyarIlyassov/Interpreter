@@ -24,7 +24,33 @@ T Stack <T, max_size >::pop() {
 		throw "Stack is empty";
 }
 
-void Parser::gl () {   
+void Parser::dec() {
+	string id_name = st_str.pop();
+	for (int i = 0; i < TID.top; i++) {
+		if (id_name == TID.p[i].name) {
+			if (TID.p[i].declare)
+				throw "Redeclaration";
+			else {
+				TID.p[i].declare = true;
+				return;
+			}
+		}
+	}
+	TID.put(id_name);
+}
+
+void Parser::check_id() {
+	string id_name = st_str.pop();
+	for (int i = 0; i < TID.top; i++) {
+		if (id_name == TID.p[i].name) {
+			cout << "Match " << id_name << "\n";
+			return;
+		}
+	}
+	throw id_name + " not declared";
+}
+
+void Parser::gl() {   
 	curr_lex = scan.get_lex();
 	c_type = curr_lex.t_lex;
 	c_val = curr_lex.v_lex;
@@ -60,8 +86,11 @@ void Parser::Dcl() {
 	cout << "Dcl\n";
 	if (c_type == LEX_INT || c_type == LEX_FLOAT) {
 		gl();
-		if (c_type == LEX_ID)
+		if (c_type == LEX_ID) {
+			st_str.push(c_val);
+			dec();
 			gl();
+		}
 		else
 			throw curr_lex;
 	}
@@ -77,6 +106,8 @@ void Parser::Stmts() {
 void Parser::Stmt() {
 	cout << "Stmt\n";
 	if (c_type == LEX_ID) {
+		st_str.push(c_val);
+		check_id();
 		gl();
 		if (c_type == LEX_ASSIGN) {
 			Val();
@@ -87,15 +118,16 @@ void Parser::Stmt() {
 		gl();
 		if (c_type != LEX_ID)
 			throw curr_lex;
-		else
+		else {
+			st_str.push(c_val);
+			check_id();
 			gl();
+		}
 	}
 }
 
 void Parser::Val() {
 	gl();
-//	check_id();
-//	prog.put_lex(c_lex);
 	cout << "Val\n";
 	if(c_type != LEX_ID && c_type != LEX_INUM && c_type != LEX_FNUM)
 		throw curr_lex;
@@ -111,51 +143,6 @@ void Parser::Expr() {
 	}
 //	check_op();
 }
-
-/*void Parser::dec(type_lex Type) {
-	int i;
-	while (!st_int.is_empty()) {
-		i = st_int.pop();
-
-		if (TID[i].declare)
-			throw "Redeclaration";
-		else {
-			TID[i].declare = true;
-			TID[i].type = Type;
-		}
-	}
-	cout << "Declared : " << TID.p[i].name << endl;
-}
-
-void Parser::check_id() {
-	int ind = fromString<int>(c_val);
-	if (TID.p[ind].declare)
-		st_lex.push(TID.p[ind].type);
-	else
-		throw "Not Declared";
-}
-
-void Parser::check_op() {
-	type_lex t1, t2, op;
-
-	t2 = st_lex.pop();
-	op = st_lex.pop();
-	t1 = st_lex.pop();
-
-	cout << "( " << t1 << " " << op << " " << t2 << " )" << "\n";
-
-	if (t1 != t2)
-		st_lex.push(LEX_FLOAT);
-	else if (t1 == t2)
-		st_lex.push(t1);
-	else
-		throw "Wrong types in operation";
-}
-
-void Parser::eq_type() {
-	if (st_lex.pop() != st_lex.pop())
-		throw "Wrong types in assignment";
-}*/
 
 void Interpretator::interpretation()
 {
