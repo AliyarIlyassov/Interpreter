@@ -16,6 +16,24 @@ template <typename T, int max_size > struct Stack {
 	bool is_full() { return top == max_size; }
 };
 
+struct Poliz {
+	Lex * p;
+	int size;
+	int free;
+
+	Poliz ( int max_size );
+
+	~Poliz() { delete []p; };
+
+//	void put_lex(Lex l, int place) { p[place]=l; };
+	void put_lex(Lex l) { p[free++] = l; };
+	void blank() { ++free; };
+
+	Lex& operator[] ( int index );
+
+	void print();
+};
+
 struct Parser {
 	Lex curr_lex; // текущая лексема
 	type_lex c_type;
@@ -23,7 +41,7 @@ struct Parser {
 	Scanner scan;
 
 	Stack < string, 100 > st_str;
-	Stack < type_lex, 100 > st_lex;
+	Stack < Lex, 100 > st_lex;
 
 	void Prog();
 	void Dcls();
@@ -42,10 +60,11 @@ struct Parser {
 	void dec ( type_lex Type);
 	void check_op ();
 	void eq_type ();
-	
-	Poliz prog;
 */
-	Parser ( const char *program) : scan (program), c_type(LEX_NULL) {}
+
+	Poliz prog;
+
+	Parser ( const char *program) : scan (program), c_type(LEX_NULL), prog(1000) {}
 	
 	void analyze();
 };

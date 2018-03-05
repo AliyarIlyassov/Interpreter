@@ -24,6 +24,25 @@ T Stack <T, max_size >::pop() {
 		throw "Stack is empty";
 }
 
+Poliz::Poliz ( int max_size ) {
+	p = new Lex [size = max_size];
+	free = 0;
+}
+
+Lex & Poliz::operator[] ( int index ) {
+	if (index > size) 
+		throw "POLIZ : Out of array";
+	else if ( index > free )
+		throw "POLIZ : Indefinite element of array";
+	else
+		return p[index];
+}
+
+void Poliz::print() {
+	for ( int i = 0; i < free; ++i )
+		cout << p[i];
+}
+
 void Parser::dec() {
 	string id_name = st_str.pop();
 	for (int i = 0; i < TID.top; i++) {
@@ -108,10 +127,12 @@ void Parser::Stmt() {
 	if (c_type == LEX_ID) {
 		st_str.push(c_val);
 		check_id();
+		prog.put_lex(Lex(POLIZ_ADDRESS, c_val));
 		gl();
 		if (c_type == LEX_ASSIGN) {
 			Val();
 			Expr();
+			prog.put_lex(Lex(LEX_ASSIGN, "="));
 		} else
 			throw curr_lex;
 	} else if (c_type == LEX_PRINT) {
@@ -121,6 +142,8 @@ void Parser::Stmt() {
 		else {
 			st_str.push(c_val);
 			check_id();
+			prog.put_lex(curr_lex);
+			prog.put_lex(Lex(LEX_PRINT, "print"));
 			gl();
 		}
 	}
@@ -131,22 +154,28 @@ void Parser::Val() {
 	cout << "Val\n";
 	if(c_type != LEX_ID && c_type != LEX_INUM && c_type != LEX_FNUM)
 		throw curr_lex;
+	else
+		prog.put_lex(curr_lex);
 }
 
 void Parser::Expr() {
 	gl();
-//	st_lex.push(c_type);
 	cout << "Expr\n";
-	if (c_type == LEX_PLUS || c_type == LEX_MINUS) {
+	if (c_type == LEX_PLUS) {
 		Val();
+		prog.put_lex(Lex(LEX_PLUS, "+"));
+		Expr();
+	} else if (c_type == LEX_MINUS) {
+		Val();
+		prog.put_lex(Lex(LEX_MINUS, "-"));
 		Expr();
 	}
-//	check_op();
 }
 
 void Interpretator::interpretation()
 {
 	pars.analyze();
+	pars.prog.print();
 //	cout << "Start execute: " << endl;
 //	E.execute(pars.prog);
 }

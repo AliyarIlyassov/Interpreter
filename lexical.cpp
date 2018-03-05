@@ -120,11 +120,8 @@ Lex Scanner::get_lex() {
 				else if ( blank(c) ) {
 					if (ident_ind = look(buf, TW))
 						return Lex(TWords[ident_ind], buf);
-					else {
-//						TID.put(buf);
-//						cout << buf << " just declared\n";
+					else
 						return Lex(LEX_ID, buf);
-					}
 				} else
 					throw "Lex Error : Identifier error\n";
 				break;
