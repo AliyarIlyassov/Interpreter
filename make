@@ -1,2 +1,2 @@
 all :
-	g++ main.cpp syntax.cpp lexical.cpp -o main
+	g++ main.cpp syntax.cpp lexical.cpp executer.cpp -o main
