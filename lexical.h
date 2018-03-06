@@ -1,32 +1,17 @@
 #ifndef __LEXICAL_H__
 #define __LEXICAL_H__
+#include <cstring>
 #include <string>
-#include <sstream>
 
 using namespace std;
 
 bool blank(char c);
 
-template <typename T>
-T toString (T v) {
-	ostringstream oss;
-	oss << v;
-	return oss.str();
-}
-
-template <typename T>
-T fromString (const string & s) {
-	istringstream iss(s);
-	T res;
-	iss >> res;
-	return res;
-}
-
 enum type_lex {
-	LEX_NULL, LEX_ASSIGN, LEX_FIN, LEX_FLOAT,
-	LEX_FNUM, LEX_ID, LEX_INT, LEX_INUM,
-	LEX_MINUS, LEX_PLUS, LEX_PRINT, POLIZ_ADDRESS, POLIZ_LABEL,
-	POLIZ_GO, POLIZ_FGO, LEX_EOF
+	LEX_NULL, LEX_ASSIGN, LEX_FIN, LEX_FLOAT, 		// 0, 1, 2, 3
+	LEX_FNUM, LEX_ID, LEX_INT, LEX_INUM,			// 4, 5, 6, 7
+	LEX_MINUS, LEX_PLUS, LEX_PRINT, POLIZ_ADDRESS,	// 8, 9, 10, 11
+	LEX_EOF											// 12
 };
 
 struct Lex {
@@ -37,6 +22,8 @@ struct Lex {
 	Lex ( type_lex t, string v );
 	friend ostream & operator << ( ostream & s, Lex l );
 	friend bool operator != (Lex a, Lex b);
+	friend Lex operator + (Lex a, Lex b);
+	friend Lex operator - (Lex a, Lex b);
 };
 
 struct Ident {

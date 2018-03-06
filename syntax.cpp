@@ -1,3 +1,4 @@
+#include "lexical.h"
 #include "syntax.h"
 #include <stack>
 #include <iostream>
@@ -9,8 +10,7 @@ extern tabl_ident TID;
 template <typename T, int max_size >
 void Stack <T, max_size >::push(T i) {
 	if ( !is_full() ) {
-		s[top] = i;
-		++top;
+		s[top++] = i;
 	} else
 		throw "Stack is full";
 }
@@ -62,7 +62,7 @@ void Parser::check_id() {
 	string id_name = st_str.pop();
 	for (int i = 0; i < TID.top; i++) {
 		if (id_name == TID.p[i].name) {
-			cout << "Match " << id_name << "\n";
+//			cout << "Match " << id_name << "\n";
 			return;
 		}
 	}
@@ -73,19 +73,18 @@ void Parser::gl() {
 	curr_lex = scan.get_lex();
 	c_type = curr_lex.t_lex;
 	c_val = curr_lex.v_lex;
-	cout << "( " << c_type << " : " << c_val << " )\n";
+//	cout << "( " << c_type << " : " << c_val << " )\n";
 }
 
 
 void Parser::analyze () {
-	cout << "Analyze started : \n";
+//	cout << "Analyze started : \n";
 	Prog();
-//	prog.print();
-	cout << endl << "Success\n" << endl;
+	cout << endl << "Analysis was successful\n" << endl;
 }
 
 void Parser::Prog() {
-	cout << "Prog\n";
+//	cout << "Prog\n";
 	Dcls();
 	Stmts();
 	if (c_type != LEX_FIN)
@@ -93,7 +92,7 @@ void Parser::Prog() {
 }
 
 void Parser::Dcls() {
-	cout << "Dcls\n";
+//	cout << "Dcls\n";
 	Dcl();
 	if (c_type == LEX_INT || c_type == LEX_FLOAT)
 		Dcls();
@@ -102,7 +101,7 @@ void Parser::Dcls() {
 void Parser::Dcl() {
 	if (c_type == LEX_NULL)
 		gl();
-	cout << "Dcl\n";
+//	cout << "Dcl\n";
 	if (c_type == LEX_INT || c_type == LEX_FLOAT) {
 		gl();
 		if (c_type == LEX_ID) {
@@ -116,14 +115,14 @@ void Parser::Dcl() {
 }
 
 void Parser::Stmts() {
-	cout << "Stmts\n";
+//	cout << "Stmts\n";
 	Stmt();
 	if (c_type == LEX_ID || c_type == LEX_PRINT)
 		Stmts();
 }
 
 void Parser::Stmt() {
-	cout << "Stmt\n";
+//	cout << "Stmt\n";
 	if (c_type == LEX_ID) {
 		st_str.push(c_val);
 		check_id();
@@ -151,7 +150,7 @@ void Parser::Stmt() {
 
 void Parser::Val() {
 	gl();
-	cout << "Val\n";
+//	cout << "Val\n";
 	if(c_type != LEX_ID && c_type != LEX_INUM && c_type != LEX_FNUM)
 		throw curr_lex;
 	else
@@ -160,7 +159,7 @@ void Parser::Val() {
 
 void Parser::Expr() {
 	gl();
-	cout << "Expr\n";
+//	cout << "Expr\n";
 	if (c_type == LEX_PLUS) {
 		Val();
 		prog.put_lex(Lex(LEX_PLUS, "+"));
@@ -171,12 +170,3 @@ void Parser::Expr() {
 		Expr();
 	}
 }
-
-void Interpretator::interpretation()
-{
-	pars.analyze();
-	pars.prog.print();
-//	cout << "Start execute: " << endl;
-//	E.execute(pars.prog);
-}
-

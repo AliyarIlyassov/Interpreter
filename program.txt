@@ -5,6 +5,7 @@ int works
 int abl
 float tabl
 abl = 5 + 6 - 4
+tabl = 6.7
 print abl
 works = 8
 print works

@@ -38,6 +38,30 @@ bool operator != (Lex a, Lex b) {
 	return (a.t_lex != b.t_lex);
 }
 
+Lex operator + (Lex a, Lex b) {
+	if (a.t_lex == LEX_INT) {
+		int a_ival = atoi(a.v_lex.c_str());
+		int b_ival = atoi(b.v_lex.c_str());
+		return Lex(LEX_INT, to_string(a_ival + b_ival));
+	} else {
+		float a_fval = atof(a.v_lex.c_str());
+		float b_fval = atof(b.v_lex.c_str());
+		return Lex(LEX_FLOAT, to_string(a_fval + b_fval));
+	}
+}
+
+Lex operator - (Lex a, Lex b) {
+	if (a.t_lex == LEX_INT) {
+		int a_ival = atoi(a.v_lex.c_str());
+		int b_ival = atoi(b.v_lex.c_str());
+		return Lex(LEX_INT, to_string(a_ival - b_ival));
+	} else {
+		float a_fval = atof(a.v_lex.c_str());
+		float b_fval = atof(b.v_lex.c_str());
+		return Lex(LEX_FLOAT, to_string(a_fval - b_fval));
+	}
+}
+
 Ident::Ident ( ) : name(""), declare(false), type(LEX_NULL), assign(false), value("") {}
 
 ostream & operator << ( ostream &s, Ident &I) {

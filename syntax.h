@@ -56,24 +56,11 @@ struct Parser {
 	void dec();	//Checks if there was redeclaration
 	void check_id();
 
-/*
-	void dec ( type_lex Type);
-	void check_op ();
-	void eq_type ();
-*/
-
 	Poliz prog;
 
 	Parser ( const char *program) : scan (program), c_type(LEX_NULL), prog(1000) {}
 	
 	void analyze();
-};
-
-struct Interpretator {
-	Parser pars;
-//	Executer E;	
-	Interpretator (const char *program) : pars(program) { }
-	void interpretation();
 };
 
 #endif
