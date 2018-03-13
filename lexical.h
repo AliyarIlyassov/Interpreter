@@ -42,8 +42,8 @@ struct tabl_ident {
 	Ident * p;
 	int size;
 	int top;
-	
-	tabl_ident (int max_size);	
+
+	tabl_ident (int max_size);
 	~tabl_ident ( );
 	Ident & operator[] (int k);
 	void put ( string buf);
@@ -56,7 +56,7 @@ struct Scanner {
 	char c;
 	string buf;
 	int buf_top;
-	
+
 	static type_lex TWords[];
 	static type_lex TDlms[];
 	static string TW[];

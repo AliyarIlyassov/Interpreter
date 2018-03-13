@@ -8,10 +8,11 @@ struct Executer {
 	void execute ( Poliz & prog );
 };
 
+int find(string key);
 
 struct Interpretator {
 	Parser pars;
-	Executer E;	
+	Executer E;
 	Interpretator (const char *program) : pars(program) { }
 	void interpretation();
 };
