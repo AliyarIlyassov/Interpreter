@@ -1,10 +1,10 @@
 int finally
 float my
 float program
-int works
+float works
 int abl
 float tabl
-abl = 1 + 4 - 4.5
+abl = 1 + 4 - 7
 tabl = 6.7 - abl
 print abl
 works = 8

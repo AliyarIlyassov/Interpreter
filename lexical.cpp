@@ -19,7 +19,7 @@ type_lex Scanner::TWords[] = {
 };
 
 type_lex Scanner::TDlms[] = {
-	LEX_NULL, LEX_ASSIGN, LEX_PLUS, LEX_MINUS, LEX_FIN, LEX_NULL
+	LEX_NULL, LEX_ASSIGN, LEX_PLUS, LEX_MINUS, LEX_MULT, LEX_DIV, LEX_FIN, LEX_NULL
 };
 
 extern tabl_ident TID;
@@ -48,15 +48,15 @@ int find(string key) {
 Lex operator + (Lex a, Lex b) {
   if (a.t_lex != LEX_ID && b.t_lex != LEX_ID) {
     if (a.t_lex == b.t_lex) {
-      if (a.t_lex == LEX_INUM) {
+      if (a.t_lex == LEX_INT) {
       	int a_ival = atoi(a.v_lex.c_str());
       	int b_ival = atoi(b.v_lex.c_str());
-        return Lex(LEX_INUM, to_string(a_ival + b_ival));
+        return Lex(LEX_INT, to_string(a_ival + b_ival));
       }
     }
     float a_fval = atof(a.v_lex.c_str());
     float b_fval = atof(b.v_lex.c_str());
-    return Lex(LEX_FNUM, to_string(a_fval + b_fval));
+    return Lex(LEX_FLOAT, to_string(a_fval + b_fval));
   } else {
     int j;
     if (a.t_lex == LEX_ID) {
@@ -77,16 +77,15 @@ Lex operator + (Lex a, Lex b) {
 Lex operator - (Lex a, Lex b) {
   if (a.t_lex != LEX_ID && b.t_lex != LEX_ID) {
     if (a.t_lex == b.t_lex) {
-      cout << "HHERE\n";
-      if (a.t_lex == LEX_INUM) {
+      if (a.t_lex == LEX_INT) {
       	int a_ival = atoi(a.v_lex.c_str());
       	int b_ival = atoi(b.v_lex.c_str());
-        return Lex(LEX_INUM, to_string(a_ival - b_ival));
+        return Lex(LEX_INT, to_string(a_ival - b_ival));
       }
     }
     float a_fval = atof(a.v_lex.c_str());
     float b_fval = atof(b.v_lex.c_str());
-    return Lex(LEX_FNUM, to_string(a_fval - b_fval));
+    return Lex(LEX_FLOAT, to_string(a_fval - b_fval));
   } else {
     int j;
     if (a.t_lex == LEX_ID) {
@@ -104,7 +103,7 @@ Lex operator - (Lex a, Lex b) {
   }
 }
 
-Ident::Ident ( ) : name(""), declare(false), type(LEX_NULL), assign(false), value("") {}
+Ident::Ident ( ) : name(""), declare(false), type(LEX_NULL), numb_type(LEX_NULL), assign(false), value("") {}
 
 ostream & operator << ( ostream &s, Ident &I) {
 	s << "Name : " << I.name << "\n";
@@ -166,10 +165,7 @@ Lex Scanner::get_lex() {
 		switch (ST) {
 			case H :
 				clear();
-				if (c != '#')
-					buf = c;
-				else
-					gc();
+				buf = c;
 				if ( blank(c) );
 				else if (isalpha(c)) {
 					ST = IDENT;
@@ -186,8 +182,10 @@ Lex Scanner::get_lex() {
 				else if ( blank(c) ) {
 					if (ident_ind = look(buf, TW))
 						return Lex(TWords[ident_ind], buf);
-					else
+					else {
+						TID.put(buf);
 						return Lex(LEX_ID, buf);
+					}
 				} else
 					throw "Lex Error : Identifier error\n";
 				break;
@@ -198,15 +196,11 @@ Lex Scanner::get_lex() {
 					buf += c;
 				} else if (blank(c)) {
 					if (dot)
-						return Lex(LEX_FNUM, buf);
+						return Lex(LEX_FLOAT, buf);
 					else
-						return Lex(LEX_INUM, buf);
+						return Lex(LEX_INT, buf);
 				} else
 					throw "Lex Error : Number reading error\n";
-				break;
-			case COM :
-				if ( c == '\n' )
-					ST = H;
 				break;
 			case DELIM :
 				if ( ident_ind = look(buf, TD) )

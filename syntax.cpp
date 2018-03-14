@@ -30,7 +30,7 @@ Poliz::Poliz ( int max_size ) {
 }
 
 Lex & Poliz::operator[] ( int index ) {
-	if (index > size) 
+	if (index > size)
 		throw "POLIZ : Out of array";
 	else if ( index > free )
 		throw "POLIZ : Indefinite element of array";
@@ -69,7 +69,7 @@ void Parser::check_id() {
 	throw id_name + " not declared";
 }
 
-void Parser::gl() {   
+void Parser::gl() {
 	curr_lex = scan.get_lex();
 	c_type = curr_lex.t_lex;
 	c_val = curr_lex.v_lex;
@@ -102,9 +102,12 @@ void Parser::Dcl() {
 	if (c_type == LEX_NULL)
 		gl();
 //	cout << "Dcl\n";
+	Lex tmp(c_type, c_val);
 	if (c_type == LEX_INT || c_type == LEX_FLOAT) {
 		gl();
 		if (c_type == LEX_ID) {
+			prog.put_lex(curr_lex);
+			prog.put_lex(tmp);
 			st_str.push(c_val);
 			dec();
 			gl();
@@ -151,7 +154,7 @@ void Parser::Stmt() {
 void Parser::Val() {
 	gl();
 //	cout << "Val\n";
-	if(c_type != LEX_ID && c_type != LEX_INUM && c_type != LEX_FNUM)
+	if(c_type != LEX_ID && c_type != LEX_INT && c_type != LEX_FLOAT)
 		throw curr_lex;
 	else
 		prog.put_lex(curr_lex);

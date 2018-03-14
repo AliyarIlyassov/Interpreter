@@ -20,43 +20,15 @@ T Stack <T, max_size >::pop() {
 		throw "Stack is empty";
 }
 
-
 void Interpretator::interpretation() {
 	pars.analyze();
 	pars.prog.print();
 	cout << "\nStart execute:\n";
 	E.execute(pars.prog);
-}Lex operator + (Lex a, Lex b) {
-  cout << a << " " << b << endl;
-  if (a.t_lex != LEX_ID && b.t_lex != LEX_ID) {
-    if (a.t_lex == b.t_lex) {
-      if (a.t_lex == LEX_INUM) {
-      	int a_ival = atoi(a.v_lex.c_str());
-      	int b_ival = atoi(b.v_lex.c_str());
-        cout << "HERE!";
-        return Lex(LEX_INUM, to_string(a_ival + b_ival));
-      }
-      cout << "HERE2";
-      float a_fval = atof(a.v_lex.c_str());
-      float b_fval = atof(b.v_lex.c_str());
-      return Lex(LEX_FNUM, to_string(a_fval + b_fval));
-    }
-  } else {
-    int j;
-    if (a.t_lex == LEX_ID) {
-      j = find(a.v_lex);
-      if (b.t_lex == LEX_ID) {
-        int i = find(b.v_lex);
-        return Lex(TID.p[j].type, TID.p[j].value) + Lex(TID.p[i].type, TID.p[i].value);
-      }
-      return Lex(TID.p[j].type, TID.p[j].value) + b;
-    }
-    j = find(b.v_lex);
-    b.t_lex = a.t_lex;
-    b.v_lex = a.v_lex;
-    return Lex(TID.p[j].type, TID.p[j].value) + b;
-  }
 }
+
+Lex operator + (Lex a, Lex b);
+Lex operator - (Lex a, Lex b);
 
 void Executer::execute ( Poliz& prog ) {
 	Stack < Lex, 100 > args;
@@ -67,39 +39,60 @@ void Executer::execute ( Poliz& prog ) {
 		elem = prog [ index ];
 
 		switch(elem.t_lex) {
-			case LEX_FNUM:
-			case LEX_INUM:
+			case LEX_FLOAT:
+			case LEX_INT:
+//				cout << "POLIZ INT, FLOAT" << endl;
+				args.push(elem);
+				break;
 			case POLIZ_ADDRESS:
+//				cout << "POLIZ ADDRESS" << endl;
 				args.push(elem);
 				break;
 			case LEX_ID:
+//				cout << "POLIZ ID" << endl;
+				try {
+					j = find(elem.v_lex);
+					if (prog[index+1].t_lex == LEX_INT) {
+						TID.p[j].numb_type = LEX_INT;
+						break;
+					}
+					else if (prog[index+1].t_lex == LEX_FLOAT) {
+						TID.p[j].numb_type = LEX_FLOAT;
+						break;
+					}
+				}
+				catch(...) { cout << "POLIZ ERROR : LEX_ID without declaration\n"; }
 				i = find(elem.v_lex);
 				if (TID[i].assign) {
 					args.push(elem);
 					break;
 				} else
-					throw "POLIZ : indefinite identifier";
+					throw "POLIZ ERROR : indefinite identifier";
 				break;
 			case LEX_PRINT:
+//				cout << "POLIZ PRINT" << endl;
 				i = find((args.pop()).v_lex);
 				cout << TID.p[i].value << "\n";
 				break;
 			case LEX_PLUS:
-				L2 = args.pop();
-				L1 = args.pop();
-				args.push(L1 + L2);
+//				cout << "POLIZ PLUS" << endl;
+	//			L2 = args.pop();
+//				L1 = args.pop();
+				args.push(args.pop() + args.pop());
 				break;
 			case LEX_MINUS:
-				L2 = args.pop();
-				L1 = args.pop();
-				args.push(L1 - L2);
+//				cout << "POLIZ MINUS" << endl;
+	//			L2 = args.pop();
+//				L1 = args.pop();
+				args.push(args.pop() - args.pop());
 				break;
 			case LEX_ASSIGN:
+//				cout << "POLIZ ASSIGN" << endl;
 				L2 = args.pop();
 				L1 = args.pop();
 				j = find(L1.v_lex);
-				if (L1.t_lex != L2.t_lex)
-					TID.p[j].type = LEX_FLOAT;
+				if (TID.p[j].numb_type == LEX_INT && L2.t_lex == LEX_FLOAT)
+					throw "Execute ERROR : Operands " + L1.v_lex + " and " + L2.v_lex + " have different types\n";
 				TID.p[j].value = L2.v_lex;
 				TID.p[j].assign = true;
 				break;
