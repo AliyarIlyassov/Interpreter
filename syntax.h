@@ -48,7 +48,8 @@ struct Parser {
 	void Stmts();
 	void Stmt();
 	void Expr();
-	void Val();	
+	void Equation();
+	void Equation2();
 	void Dcl();
 
 	void gl ();
@@ -59,7 +60,7 @@ struct Parser {
 	Poliz prog;
 
 	Parser ( const char *program) : scan (program), c_type(LEX_NULL), prog(1000) {}
-	
+
 	void analyze();
 };
 

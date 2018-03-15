@@ -78,7 +78,6 @@ void Parser::gl() {
 
 
 void Parser::analyze () {
-//	cout << "Analyze started : \n";
 	Prog();
 	cout << endl << "Analysis was successful\n" << endl;
 }
@@ -94,25 +93,24 @@ void Parser::Prog() {
 void Parser::Dcls() {
 //	cout << "Dcls\n";
 	Dcl();
-	if (c_type == LEX_INT || c_type == LEX_FLOAT)
+	if (c_type == LEX_NLINE) {
 		Dcls();
+	}
 }
 
 void Parser::Dcl() {
-	if (c_type == LEX_NULL)
-		gl();
+	gl();
 //	cout << "Dcl\n";
-	Lex tmp(c_type, c_val);
+	Lex Tmp(c_type, c_val);
 	if (c_type == LEX_INT || c_type == LEX_FLOAT) {
 		gl();
 		if (c_type == LEX_ID) {
 			prog.put_lex(curr_lex);
-			prog.put_lex(tmp);
+			prog.put_lex(Tmp);
 			st_str.push(c_val);
 			dec();
 			gl();
-		}
-		else
+		} else
 			throw curr_lex;
 	}
 }
@@ -120,8 +118,12 @@ void Parser::Dcl() {
 void Parser::Stmts() {
 //	cout << "Stmts\n";
 	Stmt();
-	if (c_type == LEX_ID || c_type == LEX_PRINT)
-		Stmts();
+	if (c_type == LEX_NLINE) {
+		gl();
+		if (c_type == LEX_ID || c_type == LEX_PRINT)
+			Stmts();
+	} else
+		throw curr_lex;
 }
 
 void Parser::Stmt() {
@@ -132,8 +134,7 @@ void Parser::Stmt() {
 		prog.put_lex(Lex(POLIZ_ADDRESS, c_val));
 		gl();
 		if (c_type == LEX_ASSIGN) {
-			Val();
-			Expr();
+			Equation();
 			prog.put_lex(Lex(LEX_ASSIGN, "="));
 		} else
 			throw curr_lex;
@@ -151,25 +152,36 @@ void Parser::Stmt() {
 	}
 }
 
-void Parser::Val() {
-	gl();
-//	cout << "Val\n";
-	if(c_type != LEX_ID && c_type != LEX_INT && c_type != LEX_FLOAT)
-		throw curr_lex;
-	else
-		prog.put_lex(curr_lex);
+void Parser::Equation() {
+//	cout << "Equation\n";
+	Equation2();
+	if(c_type == LEX_PLUS || c_type == LEX_MINUS) {
+		Lex TMP = curr_lex;
+		if (c_type != LEX_NLINE)
+			Equation();
+		prog.put_lex(TMP);
+	}
+}
+
+void Parser::Equation2() {
+//	cout << "Equation2\n";
+	Expr();
+	if (c_type == LEX_MULT || c_type == LEX_DIV) {
+		Lex TMP = curr_lex;
+		if (c_type != LEX_NLINE)
+			Equation2();
+		prog.put_lex(TMP);
+	}
 }
 
 void Parser::Expr() {
-	gl();
 //	cout << "Expr\n";
-	if (c_type == LEX_PLUS) {
-		Val();
-		prog.put_lex(Lex(LEX_PLUS, "+"));
-		Expr();
-	} else if (c_type == LEX_MINUS) {
-		Val();
-		prog.put_lex(Lex(LEX_MINUS, "-"));
-		Expr();
+	gl();
+	if (c_type != LEX_ID && c_type != LEX_INT && c_type != LEX_FLOAT) {
+		throw curr_lex;
+	}
+	else {
+		prog.put_lex(curr_lex);
+		gl();
 	}
 }

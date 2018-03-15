@@ -11,7 +11,7 @@ string Scanner::TW[] = {
 };
 
 string Scanner::TD[] = {
-	"\0", "=", "+", "-", "$", "\0"
+	"\0", "=", "+", "-", "*", "/", "$", "\n", "\0"
 };
 
 type_lex Scanner::TWords[] = {
@@ -19,7 +19,7 @@ type_lex Scanner::TWords[] = {
 };
 
 type_lex Scanner::TDlms[] = {
-	LEX_NULL, LEX_ASSIGN, LEX_PLUS, LEX_MINUS, LEX_MULT, LEX_DIV, LEX_FIN, LEX_NULL
+	LEX_NULL, LEX_ASSIGN, LEX_PLUS, LEX_MINUS, LEX_MULT, LEX_DIV, LEX_FIN, LEX_NLINE, LEX_NULL
 };
 
 extern tabl_ident TID;
@@ -31,7 +31,7 @@ Lex::Lex ( ) : t_lex(LEX_NULL), v_lex("") { };
 Lex::Lex ( type_lex t, string v ) : t_lex(t), v_lex(v) { };
 
 ostream & operator << ( ostream & s, Lex l ) {
-	s << "( " << l.t_lex << " , " << l.v_lex << " )" << "\n";
+	s << "( " << l.t_lex << " : " << l.v_lex << " )" << "\n";
 		return s;
 }
 
@@ -103,6 +103,70 @@ Lex operator - (Lex a, Lex b) {
   }
 }
 
+Lex operator * (Lex a, Lex b) {
+  if (a.t_lex != LEX_ID && b.t_lex != LEX_ID) {
+    if (a.t_lex == b.t_lex) {
+      if (a.t_lex == LEX_INT) {
+      	int a_ival = atoi(a.v_lex.c_str());
+      	int b_ival = atoi(b.v_lex.c_str());
+        return Lex(LEX_INT, to_string(a_ival * b_ival));
+      }
+    }
+    float a_fval = atof(a.v_lex.c_str());
+    float b_fval = atof(b.v_lex.c_str());
+    return Lex(LEX_FLOAT, to_string(a_fval * b_fval));
+  } else {
+    int j;
+    if (a.t_lex == LEX_ID) {
+      j = find(a.v_lex);
+      if (b.t_lex == LEX_ID) {
+        int i = find(b.v_lex);
+        return Lex(TID.p[j].type, TID.p[j].value) * Lex(TID.p[i].type, TID.p[i].value);
+      }
+      return Lex(TID.p[j].type, TID.p[j].value) * b;
+    }
+    j = find(b.v_lex);
+    b.t_lex = a.t_lex;
+    b.v_lex = a.v_lex;
+    return Lex(TID.p[j].type, TID.p[j].value) * b;
+  }
+}
+
+Lex operator / (Lex a, Lex b) {
+	if (a.t_lex != LEX_ID && b.t_lex != LEX_ID) {
+    if (a.t_lex == b.t_lex) {
+      if (a.t_lex == LEX_INT) {
+      	int a_ival = atoi(a.v_lex.c_str());
+      	int b_ival = atoi(b.v_lex.c_str());
+				if (!b_ival) {
+					throw "POLIZ ERROR : Division by zero\n";
+				}
+        return Lex(LEX_INT, to_string(a_ival / b_ival));
+      }
+    }
+    float a_fval = atof(a.v_lex.c_str());
+    float b_fval = atof(b.v_lex.c_str());
+		if (!b_fval) {
+			throw "POLIZ ERROR : Division by zero\n";
+		}
+    return Lex(LEX_FLOAT, to_string(a_fval / b_fval));
+  } else {
+    int j;
+    if (a.t_lex == LEX_ID) {
+      j = find(a.v_lex);
+      if (b.t_lex == LEX_ID) {
+        int i = find(b.v_lex);
+        return Lex(TID.p[j].type, TID.p[j].value) / Lex(TID.p[i].type, TID.p[i].value);
+      }
+      return Lex(TID.p[j].type, TID.p[j].value) / b;
+    }
+    j = find(b.v_lex);
+    b.t_lex = a.t_lex;
+    b.v_lex = a.v_lex;
+		return b / Lex(TID.p[j].type, TID.p[j].value);
+  }
+}
+
 Ident::Ident ( ) : name(""), declare(false), type(LEX_NULL), numb_type(LEX_NULL), assign(false), value("") {}
 
 ostream & operator << ( ostream &s, Ident &I) {
@@ -166,8 +230,12 @@ Lex Scanner::get_lex() {
 			case H :
 				clear();
 				buf = c;
-				if ( blank(c) );
-				else if (isalpha(c)) {
+				if ( blank(c) ) {
+					if (c == '\n') {
+						gc();
+						return Lex(LEX_NLINE, "\n");
+					}
+				} else if (isalpha(c)) {
 					ST = IDENT;
 				} else if ( isdigit(c) ) {
 					ST = NUMB;

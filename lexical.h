@@ -11,7 +11,7 @@ enum type_lex {
 	LEX_NULL, LEX_ASSIGN, LEX_FIN, LEX_FLOAT, 			// 0, 1, 2, 3
 	LEX_ID, LEX_INT, LEX_MULT, LEX_DIV, 						// 4, 5, 6, 7
 	LEX_MINUS, LEX_PLUS, LEX_PRINT, POLIZ_ADDRESS,	// 8, 9, 10, 11
-	LEX_EOF																					// 12
+	LEX_NLINE, LEX_EOF															// 12, 13
 };
 
 struct Lex {
@@ -24,6 +24,8 @@ struct Lex {
 	friend bool operator != (Lex a, Lex b);
 	friend Lex operator + (Lex a, Lex b);
 	friend Lex operator - (Lex a, Lex b);
+	friend Lex operator * (Lex a, Lex b);
+	friend Lex operator / (Lex a, Lex b);
 };
 
 struct Ident {

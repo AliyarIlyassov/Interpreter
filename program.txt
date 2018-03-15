@@ -4,10 +4,9 @@ float program
 float works
 int abl
 float tabl
-abl = 1 + 4 - 7
-tabl = 6.7 - abl
+abl = 1 * 4 + 7
 print abl
-works = 8
+works = abl * 4
 print works
 print tabl
 $

@@ -39,17 +39,18 @@ void Executer::execute ( Poliz& prog ) {
 		elem = prog [ index ];
 
 		switch(elem.t_lex) {
+			case LEX_NLINE:
+				break;
 			case LEX_FLOAT:
 			case LEX_INT:
-//				cout << "POLIZ INT, FLOAT" << endl;
+				cout << elem << endl;
 				args.push(elem);
 				break;
 			case POLIZ_ADDRESS:
-//				cout << "POLIZ ADDRESS" << endl;
 				args.push(elem);
 				break;
 			case LEX_ID:
-//				cout << "POLIZ ID" << endl;
+				cout << elem << endl;
 				try {
 					j = find(elem.v_lex);
 					if (prog[index+1].t_lex == LEX_INT) {
@@ -61,33 +62,32 @@ void Executer::execute ( Poliz& prog ) {
 						break;
 					}
 				}
-				catch(...) { cout << "POLIZ ERROR : LEX_ID without declaration\n"; }
+				catch(...) { cout << "POLIZ ERROR : wrong declaration\n"; }
 				i = find(elem.v_lex);
-				if (TID[i].assign) {
+				if (TID.p[i].assign)
 					args.push(elem);
-					break;
-				} else
+				else
 					throw "POLIZ ERROR : indefinite identifier";
 				break;
 			case LEX_PRINT:
-//				cout << "POLIZ PRINT" << endl;
 				i = find((args.pop()).v_lex);
 				cout << TID.p[i].value << "\n";
 				break;
 			case LEX_PLUS:
-//				cout << "POLIZ PLUS" << endl;
-	//			L2 = args.pop();
-//				L1 = args.pop();
 				args.push(args.pop() + args.pop());
 				break;
 			case LEX_MINUS:
-//				cout << "POLIZ MINUS" << endl;
-	//			L2 = args.pop();
-//				L1 = args.pop();
 				args.push(args.pop() - args.pop());
 				break;
+			case LEX_MULT:
+				cout << "LEX_MULT\n";
+				args.push(args.pop() * args.pop());
+				break;
+			case LEX_DIV:
+				cout << "LEX_DIV\n";
+				args.push(args.pop() / args.pop());
+				break;
 			case LEX_ASSIGN:
-//				cout << "POLIZ ASSIGN" << endl;
 				L2 = args.pop();
 				L1 = args.pop();
 				j = find(L1.v_lex);
