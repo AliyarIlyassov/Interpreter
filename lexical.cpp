@@ -15,7 +15,7 @@ string Scanner::TD[] = {
 };
 
 type_lex Scanner::TWords[] = {
-	LEX_NULL, LEX_FLOAT, LEX_INT, LEX_PRINT, LEX_NULL
+	LEX_NULL, LEX_FNUM, LEX_INUM, LEX_PRINT, LEX_NULL
 };
 
 type_lex Scanner::TDlms[] = {
@@ -43,6 +43,13 @@ int find(string key) {
 	for (int i = 0; i < TID.top; i++)
 		if (TID.p[i].name == key)
 			return i;
+}
+
+void tabl_ident::print() {
+	cout << "Identifiers table :\n";
+	for (int i = 0; i < top; i++)
+		cout << p[i] << endl;
+	cout << "End.\n";
 }
 
 Lex operator + (Lex a, Lex b) {
@@ -173,6 +180,7 @@ ostream & operator << ( ostream &s, Ident &I) {
 	s << "Name : " << I.name << "\n";
 	s << "Declare : " << I.declare << "\n";
 	s << "Type of lex : " << I.type << "\n";
+	s << "Number Type : " << I.numb_type << "\n";
 	s << "Assign : " << I.assign << "\n";
 	s << "Value : " << I.value << "\n\n";
 	return s;

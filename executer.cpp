@@ -41,23 +41,23 @@ void Executer::execute ( Poliz& prog ) {
 		switch(elem.t_lex) {
 			case LEX_NLINE:
 				break;
+			case LEX_INUM:
+			case LEX_FNUM:
 			case LEX_FLOAT:
 			case LEX_INT:
-				cout << elem << endl;
 				args.push(elem);
 				break;
 			case POLIZ_ADDRESS:
 				args.push(elem);
 				break;
 			case LEX_ID:
-				cout << elem << endl;
 				try {
 					j = find(elem.v_lex);
-					if (prog[index+1].t_lex == LEX_INT) {
+					if (prog[index+1].t_lex == LEX_INUM) {
 						TID.p[j].numb_type = LEX_INT;
 						break;
 					}
-					else if (prog[index+1].t_lex == LEX_FLOAT) {
+					else if (prog[index+1].t_lex == LEX_FNUM) {
 						TID.p[j].numb_type = LEX_FLOAT;
 						break;
 					}
@@ -80,11 +80,9 @@ void Executer::execute ( Poliz& prog ) {
 				args.push(args.pop() - args.pop());
 				break;
 			case LEX_MULT:
-				cout << "LEX_MULT\n";
 				args.push(args.pop() * args.pop());
 				break;
 			case LEX_DIV:
-				cout << "LEX_DIV\n";
 				args.push(args.pop() / args.pop());
 				break;
 			case LEX_ASSIGN:
