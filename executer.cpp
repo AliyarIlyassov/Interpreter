@@ -22,8 +22,8 @@ T Stack <T, max_size >::pop() {
 
 void Interpretator::interpretation() {
 	pars.analyze();
-	pars.prog.print();
-	cout << "\nStart execute:\n";
+//	pars.prog.print();
+//	cout << "\nStart execute:\n";
 	E.execute(pars.prog);
 }
 
@@ -67,7 +67,7 @@ void Executer::execute ( Poliz& prog ) {
 				if (TID.p[i].assign)
 					args.push(elem);
 				else
-					throw "POLIZ ERROR : indefinite identifier";
+					throw "POLIZ ERROR : indefinite identifier " + elem.v_lex;
 				break;
 			case LEX_PRINT:
 				i = find((args.pop()).v_lex);
@@ -99,5 +99,5 @@ void Executer::execute ( Poliz& prog ) {
 		}
 		++index;
 	}
-	cout << "Execute finished!\n";
+//	cout << "Execute finished!\n";
 }

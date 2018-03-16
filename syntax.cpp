@@ -73,18 +73,18 @@ void Parser::gl() {
 	curr_lex = scan.get_lex();
 	c_type = curr_lex.t_lex;
 	c_val = curr_lex.v_lex;
-	cout << "( " << c_type << " : " << c_val << " )\n";
+//	cout << "( " << c_type << " : " << c_val << " )\n";
 }
 
 
 void Parser::analyze () {
-	cout << "Analyze\n";
+//	cout << "Analyze\n";
 	Prog();
-	cout << endl << "Analysis was successful\n" << endl;
+//	cout << endl << "Analysis was successful\n" << endl;
 }
 
 void Parser::Prog() {
-	cout << "Prog\n";
+//	cout << "Prog\n";
 	Dcls();
 //	TID.print();
 	Stmts();
@@ -93,7 +93,7 @@ void Parser::Prog() {
 }
 
 void Parser::Dcls() {
-	cout << "Dcls\n";
+//	cout << "Dcls\n";
 	Dcl();
 	if (c_type == LEX_NLINE) {
 		Dcls();
@@ -102,7 +102,7 @@ void Parser::Dcls() {
 
 void Parser::Dcl() {
 	gl();
-	cout << "Dcl\n";
+//	cout << "Dcl\n";
 	Lex Tmp(c_type, c_val);
 	if (c_type == LEX_INUM || c_type == LEX_FNUM) {
 		gl();
@@ -118,7 +118,7 @@ void Parser::Dcl() {
 }
 
 void Parser::Stmts() {
-	cout << "Stmts\n";
+//	cout << "Stmts\n";
 	Stmt();
 	if (c_type == LEX_NLINE) {
 		gl();
@@ -129,7 +129,7 @@ void Parser::Stmts() {
 }
 
 void Parser::Stmt() {
-	cout << "Stmt\n";
+//	cout << "Stmt\n";
 	if (c_type == LEX_ID) {
 		st_str.push(c_val);
 		check_id();
@@ -155,7 +155,7 @@ void Parser::Stmt() {
 }
 
 void Parser::Equation() {
-	cout << "Equation\n";
+//	cout << "Equation\n";
 	Equation2();
 	if(c_type == LEX_PLUS || c_type == LEX_MINUS) {
 		Lex TMP = curr_lex;
@@ -166,7 +166,7 @@ void Parser::Equation() {
 }
 
 void Parser::Equation2() {
-	cout << "Equation2\n";
+//	cout << "Equation2\n";
 	Expr();
 	if (c_type == LEX_MULT || c_type == LEX_DIV) {
 		Lex TMP = curr_lex;
@@ -177,9 +177,15 @@ void Parser::Equation2() {
 }
 
 void Parser::Expr() {
-	cout << "Expr\n";
+//	cout << "Expr\n";
 	gl();
-	if (c_type != LEX_ID && c_type != LEX_INT && c_type != LEX_FLOAT) {
+	if (c_type == LEX_LBR) {
+		Equation();
+		if (c_type != LEX_RBR)
+			throw "Syntax Error : No Right bracket\n";
+		else
+			gl();
+	} else if (c_type != LEX_ID && c_type != LEX_INT && c_type != LEX_FLOAT) {
 		throw curr_lex;
 	}
 	else {

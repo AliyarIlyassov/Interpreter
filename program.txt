@@ -5,9 +5,9 @@ float works
 int abl
 float tabl
 tabl = 4.97
-abl = 5 * 7 + 4
+abl = 5 * (8 / 4  + (10 / 5 + 2 * 4))
 print abl
-works = abl / 12 + 4 * 3 / 2
-print works
+abl = 3/4
+print abl
 print tabl
 $

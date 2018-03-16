@@ -11,7 +11,7 @@ string Scanner::TW[] = {
 };
 
 string Scanner::TD[] = {
-	"\0", "=", "+", "-", "*", "/", "$", "\n", "\0"
+	"\0", "=", "+", "-", "*", "/", "$", "(", ")", "\n", "\0"
 };
 
 type_lex Scanner::TWords[] = {
@@ -19,7 +19,8 @@ type_lex Scanner::TWords[] = {
 };
 
 type_lex Scanner::TDlms[] = {
-	LEX_NULL, LEX_ASSIGN, LEX_PLUS, LEX_MINUS, LEX_MULT, LEX_DIV, LEX_FIN, LEX_NLINE, LEX_NULL
+	LEX_NULL, LEX_ASSIGN, LEX_PLUS, LEX_MINUS, LEX_MULT, LEX_DIV, LEX_FIN, LEX_LBR, LEX_RBR,
+	LEX_NLINE, LEX_NULL
 };
 
 extern tabl_ident TID;
@@ -228,6 +229,8 @@ Scanner::Scanner ( const char * filename ) {
 	gc();
 }
 
+bool delim (char c) { return (c == '+' || c == '-' || c == '*' || c == '/'); }
+
 Lex Scanner::get_lex() {
 	ST = H;
 	string Number;
@@ -249,13 +252,19 @@ Lex Scanner::get_lex() {
 					ST = NUMB;
 				} else if (c == '#') {
 					ST = COM;
+				} else if (c == '(') {
+					gc();
+					return Lex(LEX_LBR, "(");
+				} else if (c == ')') {
+					gc();
+					return Lex(LEX_RBR, ")");
 				} else
 					ST = DELIM;
 				break;
 			case IDENT :
 				if ( isalpha(c) || isdigit(c) )
 					buf += c;
-				else if ( blank(c) ) {
+				else if ( blank(c) || delim(c)) {
 					if (ident_ind = look(buf, TW))
 						return Lex(TWords[ident_ind], buf);
 					else {
@@ -270,7 +279,7 @@ Lex Scanner::get_lex() {
 					dot = true;
 				if ( isdigit(c) || c == '.') {
 					buf += c;
-				} else if (blank(c)) {
+				} else if (blank(c) || c == ')' || delim(c)) {
 					if (dot)
 						return Lex(LEX_FLOAT, buf);
 					else
