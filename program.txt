@@ -1,13 +1,10 @@
-int finally
-float my
-float program
-float works
-int abl
 float tabl
 tabl = 4.97
-abl = 5 * (8 / 4  + (10 / 5 + 2 * 4))
-print abl
-abl = 3/4
-print abl
+print tabl
+tabl = sqrt tabl
+print tabl
+tabl = ln tabl
+print tabl
+tabl = exp tabl
 print tabl
 $

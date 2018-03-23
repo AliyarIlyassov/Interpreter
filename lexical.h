@@ -8,10 +8,11 @@ using namespace std;
 bool blank(char c);
 
 enum type_lex {
-	LEX_NULL, LEX_ASSIGN, LEX_FIN, LEX_FLOAT, 								// 0, 1, 2, 3
-	LEX_ID, LEX_INT, LEX_MULT, LEX_DIV, 											// 4, 5, 6, 7
-	LEX_MINUS, LEX_PLUS, LEX_PRINT, POLIZ_ADDRESS,						// 8, 9, 10, 11
-	LEX_NLINE, LEX_INUM, LEX_FNUM, LEX_LBR, LEX_RBR, LEX_EOF	// 12, 13, 14, 15, 16, 17
+	LEX_NULL, LEX_ASSIGN, LEX_FIN, LEX_FLOAT, 						// 0, 1, 2, 3
+	LEX_ID, LEX_INT, LEX_MULT, LEX_DIV, 								// 4, 5, 6, 7
+	LEX_MINUS, LEX_PLUS, LEX_PRINT, POLIZ_ADDRESS,		// 8, 9, 10, 11
+	LEX_NLINE, LEX_INUM, LEX_FNUM, LEX_LBR,					// 12, 13, 14, 15, 16, 17
+	LEX_RBR, LEX_SQRT, LEX_LN, LEX_EXP, LEX_EOF
 };
 
 struct Lex {

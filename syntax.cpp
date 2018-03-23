@@ -185,10 +185,14 @@ void Parser::Expr() {
 			throw "Syntax Error : No Right bracket\n";
 		else
 			gl();
-	} else if (c_type != LEX_ID && c_type != LEX_INT && c_type != LEX_FLOAT) {
+	} else if (c_type != LEX_ID && c_type != LEX_INT && c_type != LEX_FLOAT &&
+						 c_type != LEX_SQRT && c_type != LEX_LN && c_type != LEX_EXP) {
 		throw curr_lex;
-	}
-	else {
+	} else if (c_type == LEX_SQRT || c_type == LEX_LN || c_type == LEX_EXP) {
+		Lex TMP(c_type, c_val);
+		Expr();
+		prog.put_lex(TMP);
+	} else {
 		prog.put_lex(curr_lex);
 		gl();
 	}

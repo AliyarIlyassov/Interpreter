@@ -7,7 +7,7 @@
 using namespace std;
 
 string Scanner::TW[] = {
-	"\0", "float", "int", "print", "\0"
+	"\0", "float", "int", "print", "sqrt", "ln", "exp", "\0"
 };
 
 string Scanner::TD[] = {
@@ -15,7 +15,7 @@ string Scanner::TD[] = {
 };
 
 type_lex Scanner::TWords[] = {
-	LEX_NULL, LEX_FNUM, LEX_INUM, LEX_PRINT, LEX_NULL
+	LEX_NULL, LEX_FNUM, LEX_INUM, LEX_PRINT, LEX_SQRT, LEX_LN, LEX_EXP, LEX_NULL
 };
 
 type_lex Scanner::TDlms[] = {

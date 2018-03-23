@@ -1,5 +1,6 @@
 #include "executer.h"
 #include <iostream>
+#include <tgmath.h>
 
 extern tabl_ident TID;
 
@@ -22,8 +23,9 @@ T Stack <T, max_size >::pop() {
 
 void Interpretator::interpretation() {
 	pars.analyze();
-//	pars.prog.print();
+	pars.prog.print();
 //	cout << "\nStart execute:\n";
+	cout << endl;
 	E.execute(pars.prog);
 }
 
@@ -39,6 +41,18 @@ void Executer::execute ( Poliz& prog ) {
 		elem = prog [ index ];
 
 		switch(elem.t_lex) {
+			case LEX_SQRT:
+				j = find(args.pop().v_lex);
+				args.push(Lex(LEX_FLOAT, to_string(sqrt(atof(TID.p[j].value.c_str())))));
+				break;
+			case LEX_LN:
+				j = find(args.pop().v_lex);
+				args.push(Lex(LEX_FLOAT, to_string(log(atof(TID.p[j].value.c_str())))));
+				break;
+			case LEX_EXP:
+				j = find(args.pop().v_lex);
+				args.push(Lex(LEX_FLOAT, to_string(exp(atof(TID.p[j].value.c_str())))));
+				break;
 			case LEX_NLINE:
 				break;
 			case LEX_INUM:
