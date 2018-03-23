@@ -6,10 +6,10 @@
 	Dcls   		-> Dcl Dcls | Eps
 	Dcl    		-> "float" id | "int" id
 	Stmts  		-> Stm Stmts | Eps
-	Stmt   		-> id assign Equation | "print" id
-	Equation  -> Equation2 { (+|-) Equation2 }
-	Equation2 -> Expr { (* | / ) Expr }
-	Expr 			-> id | inum | fnum | "sqrt" Expr | "ln" Expr | "exp" Expr
+	Stmt			-> id assign Equation | "print" id
+	Equation	-> Equation2 { (+|-) Equation2 }
+	Equation2	-> Expr { (* | / ) Expr }
+	Expr			-> id | inum | fnum | "sqrt" Expr | "ln" Expr | "exp" Expr
 	id     		-> char id | Eps
 	char   		-> 'a' | 'b' | 'c' | ... | 'x' | 'y' | 'z'
 	assign 		-> '='
