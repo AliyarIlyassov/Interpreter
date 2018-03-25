@@ -7,7 +7,8 @@
 using namespace std;
 
 string Scanner::TW[] = {
-	"\0", "float", "int", "print", "sqrt", "ln", "exp", "\0"
+	"\0", "float", "int", "print", "sqrt", "ln", "exp", "if", "endif", "true", "false", "and", "or",
+	"equal", "notequal", "else", "\0"
 };
 
 string Scanner::TD[] = {
@@ -15,7 +16,8 @@ string Scanner::TD[] = {
 };
 
 type_lex Scanner::TWords[] = {
-	LEX_NULL, LEX_FNUM, LEX_INUM, LEX_PRINT, LEX_SQRT, LEX_LN, LEX_EXP, LEX_NULL
+	LEX_NULL, LEX_FNUM, LEX_INUM, LEX_PRINT, LEX_SQRT, LEX_LN, LEX_EXP, LEX_IF, LEX_ENDIF, LEX_TRUE,
+	LEX_FALSE, LEX_AND, LEX_OR, LEX_EQUAL, LEX_NEQUAL, LEX_ELSE, LEX_NULL
 };
 
 type_lex Scanner::TDlms[] = {
@@ -36,14 +38,11 @@ ostream & operator << ( ostream & s, Lex l ) {
 		return s;
 }
 
-bool operator != (Lex a, Lex b) {
-	return (a.t_lex != b.t_lex);
-}
-
 int find(string key) {
 	for (int i = 0; i < TID.top; i++)
 		if (TID.p[i].name == key)
 			return i;
+	throw "Indefinite identifier\n";
 }
 
 void tabl_ident::print() {
@@ -51,6 +50,13 @@ void tabl_ident::print() {
 	for (int i = 0; i < top; i++)
 		cout << p[i] << endl;
 	cout << "End.\n";
+}
+
+Lex bool_to_float(Lex a) {
+	if (a.t_lex == LEX_TRUE)
+		return Lex(LEX_FLOAT, "1");
+	if (a.t_lex == LEX_FALSE)
+		return Lex(LEX_FLOAT, "0");
 }
 
 Lex operator + (Lex a, Lex b) {
@@ -175,6 +181,106 @@ Lex operator / (Lex a, Lex b) {
   }
 }
 
+Lex operator && (Lex a, Lex b) {
+	if (a.t_lex == LEX_TRUE)
+		return Lex(LEX_FLOAT, "1") && b;
+	if (a.t_lex == LEX_FALSE)
+		return Lex(LEX_FLOAT, "0") && b;
+	if (b.t_lex == LEX_TRUE)
+		return a && Lex(LEX_FLOAT, "1");
+	if (a.t_lex == LEX_FALSE)
+		return a && Lex(LEX_FLOAT, "0");
+	if (a.t_lex == LEX_ID) {
+		a.t_lex = LEX_FLOAT;
+		int tmp_index = find(a.v_lex);
+		a.v_lex = TID.p[tmp_index].value;
+	}
+	if (b.t_lex == LEX_ID) {
+		b.t_lex = LEX_FLOAT;
+		int tmp_index = find(b.v_lex);
+		b.v_lex = TID.p[tmp_index].value;
+	}
+	if (atof(a.v_lex.c_str()) && atof(b.v_lex.c_str()))
+		return Lex(LEX_TRUE, "true");
+	else
+		return Lex(LEX_FALSE, "false");
+}
+
+Lex operator || (Lex a, Lex b) {
+	if (a.t_lex == LEX_TRUE)
+		return Lex(LEX_FLOAT, "1") || b;
+	if (a.t_lex == LEX_FALSE)
+		return Lex(LEX_FLOAT, "0") || b;
+	if (b.t_lex == LEX_TRUE)
+		return a || Lex(LEX_FLOAT, "1");
+	if (a.t_lex == LEX_FALSE)
+		return a || Lex(LEX_FLOAT, "0");
+	if (a.t_lex == LEX_ID) {
+		a.t_lex = LEX_FLOAT;
+		int tmp_index = find(a.v_lex);
+		a.v_lex = TID.p[tmp_index].value;
+	}
+	if (b.t_lex == LEX_ID) {
+		b.t_lex = LEX_FLOAT;
+		int tmp_index = find(b.v_lex);
+		b.v_lex = TID.p[tmp_index].value;
+	}
+	if (atof(a.v_lex.c_str()) || atof(b.v_lex.c_str()))
+		return Lex(LEX_TRUE, "true");
+	else
+		return Lex(LEX_FALSE, "false");
+}
+
+Lex operator == (Lex a, Lex b) {
+	if (a.t_lex == LEX_TRUE)
+		return Lex(LEX_FLOAT, "1") == b;
+	if (a.t_lex == LEX_FALSE)
+		return Lex(LEX_FLOAT, "0") == b;
+	if (b.t_lex == LEX_TRUE)
+		return a == Lex(LEX_FLOAT, "1");
+	if (a.t_lex == LEX_FALSE)
+		return a == Lex(LEX_FLOAT, "0");
+	if (a.t_lex == LEX_ID) {
+		a.t_lex = LEX_FLOAT;
+		int tmp_index = find(a.v_lex);
+		a.v_lex = TID.p[tmp_index].value;
+	}
+	if (b.t_lex == LEX_ID) {
+		b.t_lex = LEX_FLOAT;
+		int tmp_index = find(b.v_lex);
+		b.v_lex = TID.p[tmp_index].value;
+	}
+	if (atof(a.v_lex.c_str()) == atof(b.v_lex.c_str()))
+		return Lex(LEX_TRUE, "true");
+	else
+		return Lex(LEX_FALSE, "false");
+}
+
+Lex operator != (Lex a, Lex b) {
+	if (a.t_lex == LEX_TRUE)
+		return Lex(LEX_FLOAT, "1") != b;
+	if (a.t_lex == LEX_FALSE)
+		return Lex(LEX_FLOAT, "0") != b;
+	if (b.t_lex == LEX_TRUE)
+		return a != Lex(LEX_FLOAT, "1");
+	if (a.t_lex == LEX_FALSE)
+		return a != Lex(LEX_FLOAT, "0");
+	if (a.t_lex == LEX_ID) {
+		a.t_lex = LEX_FLOAT;
+		int tmp_index = find(a.v_lex);
+		a.v_lex = TID.p[tmp_index].value;
+	}
+	if (b.t_lex == LEX_ID) {
+		b.t_lex = LEX_FLOAT;
+		int tmp_index = find(b.v_lex);
+		b.v_lex = TID.p[tmp_index].value;
+	}
+	if (atof(a.v_lex.c_str()) != atof(b.v_lex.c_str()))
+		return Lex(LEX_TRUE, "true");
+	else
+		return Lex(LEX_FALSE, "false");
+}
+
 Ident::Ident ( ) : name(""), declare(false), type(LEX_NULL), numb_type(LEX_NULL), assign(false), value("") {}
 
 ostream & operator << ( ostream &s, Ident &I) {
@@ -229,7 +335,7 @@ Scanner::Scanner ( const char * filename ) {
 	gc();
 }
 
-bool delim (char c) { return (c == '+' || c == '-' || c == '*' || c == '/'); }
+bool delim (char c) { return (c == '+' || c == '-' || c == '*' || c == '/' || c == '(' || c == ')'); }
 
 Lex Scanner::get_lex() {
 	ST = H;
@@ -271,8 +377,9 @@ Lex Scanner::get_lex() {
 						TID.put(buf);
 						return Lex(LEX_ID, buf);
 					}
-				} else
+				} else {
 					throw "Lex Error : Identifier error\n";
+				}
 				break;
 			case NUMB:
 				if (c == '.')

@@ -51,6 +51,9 @@ struct Parser {
 	void Equation();
 	void Equation2();
 	void Dcl();
+	void BoolStmt();
+	void Expr1();
+
 
 	void gl ();
 

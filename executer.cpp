@@ -23,8 +23,9 @@ T Stack <T, max_size >::pop() {
 
 void Interpretator::interpretation() {
 	pars.analyze();
+	cout << endl;
 	pars.prog.print();
-//	cout << "\nStart execute:\n";
+	cout << "\nStart execute:\n";
 	cout << endl;
 	E.execute(pars.prog);
 }
@@ -35,12 +36,39 @@ Lex operator - (Lex a, Lex b);
 void Executer::execute ( Poliz& prog ) {
 	Stack < Lex, 100 > args;
 	int i, j, index = 0, size = prog.free;
+	float f;
 	Lex L1, L2;
 	while ( index < size ) {
 
 		elem = prog [ index ];
 
 		switch(elem.t_lex) {
+			case LEX_AND:
+				args.push(args.pop() && args.pop());
+				break;
+			case LEX_OR:
+				args.push(args.pop() || args.pop());
+				break;
+			case LEX_EQUAL:
+				args.push(args.pop() == args.pop());
+				break;
+			case LEX_NEQUAL:
+				args.push(args.pop() != args.pop());
+				break;
+			case LEX_IF:
+				L1 = args.pop();
+				if (L1.t_lex == LEX_ID) {
+					j = find(L1.v_lex);
+					L1.t_lex = LEX_FLOAT;
+					L1.v_lex = TID.p[j].value;
+				}
+				f = atof(L1.v_lex.c_str());
+				if ((L1.t_lex == LEX_TRUE) || ((L1.t_lex == LEX_INT || L1.t_lex == LEX_FLOAT) && (f)))
+					break;
+				else if ((L1.t_lex == LEX_FALSE) || ((L1.t_lex == LEX_INT || L1.t_lex == LEX_FLOAT) && (!f)))
+					while(prog[index].t_lex != LEX_ENDIF && prog[index].t_lex != LEX_ELSE)
+						++index;
+				break;
 			case LEX_SQRT:
 				j = find(args.pop().v_lex);
 				args.push(Lex(LEX_FLOAT, to_string(sqrt(atof(TID.p[j].value.c_str())))));
@@ -53,8 +81,16 @@ void Executer::execute ( Poliz& prog ) {
 				j = find(args.pop().v_lex);
 				args.push(Lex(LEX_FLOAT, to_string(exp(atof(TID.p[j].value.c_str())))));
 				break;
+			case LEX_ELSE:
+				while (prog[index].t_lex != LEX_ENDIF) {
+					cout << "YES\n";
+					++index;
+				}
+			case LEX_ENDIF:
 			case LEX_NLINE:
 				break;
+			case LEX_FALSE:
+			case LEX_TRUE:
 			case LEX_INUM:
 			case LEX_FNUM:
 			case LEX_FLOAT:

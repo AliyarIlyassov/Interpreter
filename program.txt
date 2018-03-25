@@ -1,10 +1,14 @@
 float tabl
+int haha
 tabl = 4.97
-print tabl
-tabl = sqrt tabl
-print tabl
-tabl = ln tabl
-print tabl
-tabl = exp tabl
+haha = 1
+if haha and (tabl equal 0)
+	print tabl
+	haha = 3
+else
+	tabl = 3.67
+	haha = 2
+endif
+print haha
 print tabl
 $

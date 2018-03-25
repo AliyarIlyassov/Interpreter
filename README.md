@@ -6,7 +6,8 @@
 	Dcls       -> Dcl Dcls | Eps
 	Dcl        -> "float" id | "int" id
 	Stmts      -> Stm Stmts | Eps
-	Stmt       -> id assign Equation | "print" id
+	Stmt       -> id assign Equation | "print" id | "if" boolStmt Stmt
+	boolStmt   -> Expr1 { boolOp boolStmt }
 	Equation   -> Equation2 { (+|-) Equation2 }
 	Equation2  -> Expr { (* | / ) Expr }
 	Expr       -> id | inum | fnum | "sqrt" Expr | "ln" Expr | "exp" Expr

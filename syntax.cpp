@@ -73,18 +73,18 @@ void Parser::gl() {
 	curr_lex = scan.get_lex();
 	c_type = curr_lex.t_lex;
 	c_val = curr_lex.v_lex;
-//	cout << "( " << c_type << " : " << c_val << " )\n";
+	cout << "( " << c_type << " : " << c_val << " )\n";
 }
 
 
 void Parser::analyze () {
-//	cout << "Analyze\n";
+	cout << "Analyze\n";
 	Prog();
 //	cout << endl << "Analysis was successful\n" << endl;
 }
 
 void Parser::Prog() {
-//	cout << "Prog\n";
+	cout << "Prog\n";
 	Dcls();
 //	TID.print();
 	Stmts();
@@ -93,7 +93,7 @@ void Parser::Prog() {
 }
 
 void Parser::Dcls() {
-//	cout << "Dcls\n";
+	cout << "Dcls\n";
 	Dcl();
 	if (c_type == LEX_NLINE) {
 		Dcls();
@@ -102,7 +102,7 @@ void Parser::Dcls() {
 
 void Parser::Dcl() {
 	gl();
-//	cout << "Dcl\n";
+	cout << "Dcl\n";
 	Lex Tmp(c_type, c_val);
 	if (c_type == LEX_INUM || c_type == LEX_FNUM) {
 		gl();
@@ -118,18 +118,19 @@ void Parser::Dcl() {
 }
 
 void Parser::Stmts() {
-//	cout << "Stmts\n";
+	cout << "Stmts\n";
 	Stmt();
 	if (c_type == LEX_NLINE) {
 		gl();
-		if (c_type == LEX_ID || c_type == LEX_PRINT)
+		if (c_type == LEX_ID || c_type == LEX_PRINT || c_type == LEX_IF)
 			Stmts();
-	} else
+	}	else
 		throw curr_lex;
 }
 
 void Parser::Stmt() {
-//	cout << "Stmt\n";
+	cout << "Stmt\n";
+	cout << curr_lex << endl;
 	if (c_type == LEX_ID) {
 		st_str.push(c_val);
 		check_id();
@@ -151,11 +152,65 @@ void Parser::Stmt() {
 			prog.put_lex(Lex(LEX_PRINT, "print"));
 			gl();
 		}
+	} else if (c_type == LEX_IF) {
+		BoolStmt();
+		if (c_type == LEX_NLINE)
+			gl();
+		else
+			throw curr_lex;
+		prog.put_lex(Lex(LEX_IF, "if"));
+		while (c_type != LEX_ENDIF && c_type != LEX_ELSE)
+			Stmt();
+		if (c_type == LEX_ELSE) {
+			prog.put_lex(Lex(LEX_ELSE, "else"));
+			gl();
+			while(c_type != LEX_ENDIF)
+				Stmt();
+		}
+		prog.put_lex(Lex(LEX_ENDIF, "endif"));
+		gl();
+	} else if (c_type == LEX_NLINE)
+		gl();
+}
+
+void Parser::BoolStmt() {
+	cout << "BoolStmt\n";
+	Expr1();
+//	if (c_type != LEX_NLINE)
+//		BoolStmt();
+	if(c_type == LEX_AND || c_type == LEX_OR || c_type == LEX_EQUAL || c_type == LEX_NEQUAL) {
+		Lex TMP = curr_lex;
+		if (c_type != LEX_NLINE)
+			BoolStmt();
+		prog.put_lex(TMP);
 	}
 }
 
+void Parser::Expr1() {
+	gl();
+	cout << "Expr1\n";
+	if (c_type == LEX_LBR) {
+		BoolStmt();
+		if (c_type != LEX_RBR)
+			throw "Syntax Error : No Right bracket\n";
+		else
+			gl();
+	} else if (c_type != LEX_ID && c_type != LEX_INT && c_type != LEX_FLOAT && c_type != LEX_SQRT &&
+						 c_type != LEX_LN && c_type != LEX_EXP && c_type != LEX_TRUE && c_type != LEX_FALSE) {
+		throw curr_lex;
+	} else if (c_type == LEX_SQRT || c_type == LEX_LN || c_type == LEX_EXP) {
+		Lex TMP(c_type, c_val);
+		Expr1();
+		prog.put_lex(TMP);
+	} else {
+		prog.put_lex(curr_lex);
+		gl();
+	}
+
+}
+
 void Parser::Equation() {
-//	cout << "Equation\n";
+	cout << "Equation\n";
 	Equation2();
 	if(c_type == LEX_PLUS || c_type == LEX_MINUS) {
 		Lex TMP = curr_lex;
@@ -166,7 +221,7 @@ void Parser::Equation() {
 }
 
 void Parser::Equation2() {
-//	cout << "Equation2\n";
+	cout << "Equation2\n";
 	Expr();
 	if (c_type == LEX_MULT || c_type == LEX_DIV) {
 		Lex TMP = curr_lex;
@@ -177,7 +232,7 @@ void Parser::Equation2() {
 }
 
 void Parser::Expr() {
-//	cout << "Expr\n";
+	cout << "Expr\n";
 	gl();
 	if (c_type == LEX_LBR) {
 		Equation();
