@@ -82,10 +82,8 @@ void Executer::execute ( Poliz& prog ) {
 				args.push(Lex(LEX_FLOAT, to_string(exp(atof(TID.p[j].value.c_str())))));
 				break;
 			case LEX_ELSE:
-				while (prog[index].t_lex != LEX_ENDIF) {
-					cout << "YES\n";
+				while (prog[index].t_lex != LEX_ENDIF)
 					++index;
-				}
 			case LEX_ENDIF:
 			case LEX_NLINE:
 				break;

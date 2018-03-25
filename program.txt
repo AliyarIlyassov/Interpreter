@@ -2,9 +2,11 @@ float tabl
 int haha
 tabl = 4.97
 haha = 1
-if haha and (tabl equal 0)
+if haha and exp tabl
+	if true
+		haha = 4
+	endif
 	print tabl
-	haha = 3
 else
 	tabl = 3.67
 	haha = 2

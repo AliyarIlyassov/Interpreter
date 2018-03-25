@@ -42,6 +42,7 @@ int find(string key) {
 	for (int i = 0; i < TID.top; i++)
 		if (TID.p[i].name == key)
 			return i;
+	cout << "YES\n" << key;
 	throw "Indefinite identifier\n";
 }
 
