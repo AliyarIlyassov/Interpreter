@@ -16,10 +16,19 @@ template <typename T, int max_size > struct Stack {
 	bool is_full() { return top == max_size; }
 };
 
+struct Loop {
+	Stack <int, 100> st;
+	int max_size;
+	int last;
+
+	Loop ();
+};
+
 struct Poliz {
 	Lex * p;
 	int size;
 	int free;
+	Loop loop;
 
 	Poliz ( int max_size );
 

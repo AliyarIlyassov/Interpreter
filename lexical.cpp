@@ -7,8 +7,8 @@
 using namespace std;
 
 string Scanner::TW[] = {
-	"\0", "float", "int", "print", "sqrt", "ln", "exp", "if", "endif", "true", "false", "and", "or",
-	"equal", "notequal", "else", "\0"
+	"\0", "float", "int", "print", "sqrt", "ln", "exp", "if", "fi", "true", "false", "and", "or",
+	"equal", "notequal", "else", "until", "here", "\0"
 };
 
 string Scanner::TD[] = {
@@ -16,8 +16,8 @@ string Scanner::TD[] = {
 };
 
 type_lex Scanner::TWords[] = {
-	LEX_NULL, LEX_FNUM, LEX_INUM, LEX_PRINT, LEX_SQRT, LEX_LN, LEX_EXP, LEX_IF, LEX_ENDIF, LEX_TRUE,
-	LEX_FALSE, LEX_AND, LEX_OR, LEX_EQUAL, LEX_NEQUAL, LEX_ELSE, LEX_NULL
+	LEX_NULL, LEX_FNUM, LEX_INUM, LEX_PRINT, LEX_SQRT, LEX_LN, LEX_EXP, LEX_IF, LEX_FI, LEX_TRUE,
+	LEX_FALSE, LEX_AND, LEX_OR, LEX_EQUAL, LEX_NEQUAL, LEX_ELSE, LEX_UNTIL, LEX_HERE, LEX_NULL
 };
 
 type_lex Scanner::TDlms[] = {
@@ -42,7 +42,6 @@ int find(string key) {
 	for (int i = 0; i < TID.top; i++)
 		if (TID.p[i].name == key)
 			return i;
-	cout << "YES\n" << key;
 	throw "Indefinite identifier\n";
 }
 
@@ -51,13 +50,6 @@ void tabl_ident::print() {
 	for (int i = 0; i < top; i++)
 		cout << p[i] << endl;
 	cout << "End.\n";
-}
-
-Lex bool_to_float(Lex a) {
-	if (a.t_lex == LEX_TRUE)
-		return Lex(LEX_FLOAT, "1");
-	if (a.t_lex == LEX_FALSE)
-		return Lex(LEX_FLOAT, "0");
 }
 
 Lex operator + (Lex a, Lex b) {
@@ -78,14 +70,14 @@ Lex operator + (Lex a, Lex b) {
       j = find(a.v_lex);
       if (b.t_lex == LEX_ID) {
         int i = find(b.v_lex);
-        return Lex(TID.p[j].type, TID.p[j].value) + Lex(TID.p[i].type, TID.p[i].value);
+        return Lex(TID.p[j].numb_type, TID.p[j].value) + Lex(TID.p[i].numb_type, TID.p[i].value);
       }
-      return Lex(TID.p[j].type, TID.p[j].value) + b;
+      return Lex(TID.p[j].numb_type, TID.p[j].value) + b;
     }
     j = find(b.v_lex);
     b.t_lex = a.t_lex;
     b.v_lex = a.v_lex;
-    return Lex(TID.p[j].type, TID.p[j].value) + b;
+    return Lex(TID.p[j].numb_type, TID.p[j].value) + b;
   }
 }
 
@@ -107,14 +99,14 @@ Lex operator - (Lex a, Lex b) {
       j = find(a.v_lex);
       if (b.t_lex == LEX_ID) {
         int i = find(b.v_lex);
-        return Lex(TID.p[j].type, TID.p[j].value) - Lex(TID.p[i].type, TID.p[i].value);
+        return Lex(TID.p[j].numb_type, TID.p[j].value) - Lex(TID.p[i].numb_type, TID.p[i].value);
       }
-      return Lex(TID.p[j].type, TID.p[j].value) - b;
+      return Lex(TID.p[j].numb_type, TID.p[j].value) - b;
     }
     j = find(b.v_lex);
     b.t_lex = a.t_lex;
     b.v_lex = a.v_lex;
-    return b - Lex(TID.p[j].type, TID.p[j].value);
+    return b - Lex(TID.p[j].numb_type, TID.p[j].value);
   }
 }
 
@@ -136,14 +128,14 @@ Lex operator * (Lex a, Lex b) {
       j = find(a.v_lex);
       if (b.t_lex == LEX_ID) {
         int i = find(b.v_lex);
-        return Lex(TID.p[j].type, TID.p[j].value) * Lex(TID.p[i].type, TID.p[i].value);
+        return Lex(TID.p[j].numb_type, TID.p[j].value) * Lex(TID.p[i].numb_type, TID.p[i].value);
       }
-      return Lex(TID.p[j].type, TID.p[j].value) * b;
+      return Lex(TID.p[j].numb_type, TID.p[j].value) * b;
     }
     j = find(b.v_lex);
     b.t_lex = a.t_lex;
     b.v_lex = a.v_lex;
-    return Lex(TID.p[j].type, TID.p[j].value) * b;
+    return Lex(TID.p[j].numb_type, TID.p[j].value) * b;
   }
 }
 
@@ -171,14 +163,14 @@ Lex operator / (Lex a, Lex b) {
       j = find(a.v_lex);
       if (b.t_lex == LEX_ID) {
         int i = find(b.v_lex);
-        return Lex(TID.p[j].type, TID.p[j].value) / Lex(TID.p[i].type, TID.p[i].value);
+        return Lex(TID.p[j].numb_type, TID.p[j].value) / Lex(TID.p[i].numb_type, TID.p[i].value);
       }
-      return Lex(TID.p[j].type, TID.p[j].value) / b;
+      return Lex(TID.p[j].numb_type, TID.p[j].value) / b;
     }
     j = find(b.v_lex);
     b.t_lex = a.t_lex;
     b.v_lex = a.v_lex;
-		return b / Lex(TID.p[j].type, TID.p[j].value);
+		return b / Lex(TID.p[j].numb_type, TID.p[j].value);
   }
 }
 

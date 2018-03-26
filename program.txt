@@ -1,16 +1,11 @@
 float tabl
 int haha
-tabl = 4.97
 haha = 1
-if haha and exp tabl
-	if true
-		haha = 4
-	endif
-	print tabl
-else
-	tabl = 3.67
-	haha = 2
-endif
+until haha notequal 10
+	if haha notequal 5
+		print haha
+	fi
+	haha = haha + 1
+here
 print haha
-print tabl
 $

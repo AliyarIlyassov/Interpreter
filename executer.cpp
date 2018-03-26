@@ -33,6 +33,8 @@ void Interpretator::interpretation() {
 Lex operator + (Lex a, Lex b);
 Lex operator - (Lex a, Lex b);
 
+Loop::Loop () : max_size(100), last(0) { }
+
 void Executer::execute ( Poliz& prog ) {
 	Stack < Lex, 100 > args;
 	int i, j, index = 0, size = prog.free;
@@ -43,6 +45,26 @@ void Executer::execute ( Poliz& prog ) {
 		elem = prog [ index ];
 
 		switch(elem.t_lex) {
+			case LEX_HERE:
+				j = prog.loop.last;
+				index = prog.loop.st.s[j] -1;
+				break;
+			case LEX_UNTIL:
+				L1 = args.pop();
+				if (L1.t_lex == LEX_ID) {
+					j = find(L1.v_lex);
+					L1.t_lex = LEX_FLOAT;
+					L1.v_lex = TID.p[j].value;
+				}
+				f = atof(L1.v_lex.c_str());
+				if ((L1.t_lex == LEX_TRUE) || ((L1.t_lex == LEX_INT || L1.t_lex == LEX_FLOAT) && (f)))
+					break;
+				else if ((L1.t_lex == LEX_FALSE) || ((L1.t_lex == LEX_INT || L1.t_lex == LEX_FLOAT) && (!f))) {
+					while(prog[index].t_lex != LEX_HERE)
+						++index;
+					prog.loop.last++;
+				}
+				break;
 			case LEX_AND:
 				args.push(args.pop() && args.pop());
 				break;
@@ -66,7 +88,7 @@ void Executer::execute ( Poliz& prog ) {
 				if ((L1.t_lex == LEX_TRUE) || ((L1.t_lex == LEX_INT || L1.t_lex == LEX_FLOAT) && (f)))
 					break;
 				else if ((L1.t_lex == LEX_FALSE) || ((L1.t_lex == LEX_INT || L1.t_lex == LEX_FLOAT) && (!f)))
-					while(prog[index].t_lex != LEX_ENDIF && prog[index].t_lex != LEX_ELSE)
+					while(prog[index].t_lex != LEX_FI && prog[index].t_lex != LEX_ELSE)
 						++index;
 				break;
 			case LEX_SQRT:
@@ -82,9 +104,9 @@ void Executer::execute ( Poliz& prog ) {
 				args.push(Lex(LEX_FLOAT, to_string(exp(atof(TID.p[j].value.c_str())))));
 				break;
 			case LEX_ELSE:
-				while (prog[index].t_lex != LEX_ENDIF)
+				while (prog[index].t_lex != LEX_FI)
 					++index;
-			case LEX_ENDIF:
+			case LEX_FI:
 			case LEX_NLINE:
 				break;
 			case LEX_FALSE:

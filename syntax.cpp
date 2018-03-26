@@ -122,7 +122,7 @@ void Parser::Stmts() {
 	Stmt();
 	if (c_type == LEX_NLINE) {
 		gl();
-		if (c_type == LEX_ID || c_type == LEX_PRINT || c_type == LEX_IF)
+		if (c_type == LEX_ID || c_type == LEX_PRINT || c_type == LEX_IF || c_type == LEX_UNTIL)
 			Stmts();
 	}	else
 		throw curr_lex;
@@ -130,7 +130,6 @@ void Parser::Stmts() {
 
 void Parser::Stmt() {
 	cout << "Stmt\n";
-	cout << curr_lex << endl;
 	if (c_type == LEX_ID) {
 		st_str.push(c_val);
 		check_id();
@@ -159,16 +158,28 @@ void Parser::Stmt() {
 		else
 			throw curr_lex;
 		prog.put_lex(Lex(LEX_IF, "if"));
-		while (c_type != LEX_ENDIF && c_type != LEX_ELSE)
+		while (c_type != LEX_FI && c_type != LEX_ELSE)
 			Stmt();
 		if (c_type == LEX_ELSE) {
 			prog.put_lex(Lex(LEX_ELSE, "else"));
 			gl();
-			while(c_type != LEX_ENDIF)
+			while(c_type != LEX_FI)
 				Stmt();
 		}
-		prog.put_lex(Lex(LEX_ENDIF, "endif"));
+		prog.put_lex(Lex(LEX_FI, "fi"));
 		gl();
+	} else if (c_type == LEX_UNTIL) {
+		prog.loop.st.push(prog.free);
+		BoolStmt();
+		if (c_type == LEX_NLINE)
+			gl();
+		else
+			throw curr_lex;
+		prog.put_lex(Lex(LEX_UNTIL, "until"));
+		while (c_type != LEX_HERE)
+			Stmt();
+		gl();
+		prog.put_lex(Lex(LEX_HERE, "here"));
 	} else if (c_type == LEX_NLINE)
 		gl();
 }
@@ -176,8 +187,6 @@ void Parser::Stmt() {
 void Parser::BoolStmt() {
 	cout << "BoolStmt\n";
 	Expr1();
-//	if (c_type != LEX_NLINE)
-//		BoolStmt();
 	if(c_type == LEX_AND || c_type == LEX_OR || c_type == LEX_EQUAL || c_type == LEX_NEQUAL) {
 		Lex TMP = curr_lex;
 		if (c_type != LEX_NLINE)
